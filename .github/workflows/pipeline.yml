@@ -1,27 +1,29 @@
-name: CI/CD
+name: CI/CD Pipeline
 
-on: 
-  push:
-    branches: ['*']
+on: [push, pull_request]
 
 jobs:
-  check-docker-compose:
+  build:
     runs-on: ubuntu-latest
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
+    - uses: actions/checkout@v3
+    
     - name: Install Docker
       run: |
-        sudo apt-get update
-        sudo apt-get install -y docker.io docker-compose
-
-    - name: Validate docker-compose.yml
-      run: docker-compose config
-
-    - name: Test services
+        sudo apt-get remove -y containerd docker.io runc || true
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
+        
+    - name: Test Docker
       run: |
+        docker --version
+        docker compose version
+        docker run hello-world
+        
+    - name: Build and test
+      run: |
+        docker-compose build
         docker-compose up -d
-        sleep 5
         docker-compose ps
         docker-compose down
