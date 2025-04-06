@@ -1,0 +1,6 @@
+scrape_configs:
+  - job_name: 'nginx'
+    scrape_interval: 15s
+    metrics_path: '/prometheus/nginx_status'
+    static_configs:
+      - targets: ['nginx:80']
